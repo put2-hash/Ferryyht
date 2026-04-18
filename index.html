@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>&lt;For Miraaaaa</title>
+    
+    <link rel="icon" type="image/x-icon" href="mira.ico.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    
+    <style>
+        @font-face {
+            font-family: '8bit';
+            src: url('fonts/8bit.ttf') format('truetype');
+        }
+
+        /* --- STYLING UNTUK LAYAR PEMBUKA --- */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ff9aab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-btn {
+            background-color: white;
+            color: #ff9aab;
+            border: 3px solid #fff;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-family: '8bit', cursive;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.05);
+        }
+        /* ---------------------------------- */
+
+        #custom-title-bar {
+            -webkit-app-region: drag;
+            height: 35px;
+            background-color: #ff9aab;
+            color: rgb(255, 220, 220);
+            font-size: 1.5em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-family: '8bit', cursive;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        #window-controls {
+            display: flex;
+            -webkit-app-region: no-drag;
+        }
+
+        #window-controls button {
+            background: transparent;
+            border: none;
+            padding: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        #window-controls button img {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) invert(1);
+        }
+
+        #window-controls button:hover img {
+            filter: brightness(0.9) invert(1) drop-shadow(0 0 2px white);
+        }
+
+        body {
+            padding-top: 35px;
+            margin: 0;
+            padding: 0;
+            background: url('cute.gif') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: '8bit', cursive;
+            color: white;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #lyrics {
+            font-size: 2.8em;
+            text-align: center;
+            background: rgb(225 145 145 / 50%);
+            padding: 30px;
+            border-radius: 15px;
+            min-width: 80%;
+            min-height: 100px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 15px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen">
+        <button id="start-btn">Buka Pesan 💌</button>
+    </div>
+
+    <audio id="laguku" src="ssstikio-1776418363816_aUINySuZ.mp3" loop></audio>
+
+    <div id="custom-title-bar">
+        <div class="title">
+            <img src="mira.ico.ico" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 8px; object-fit: cover;">
+            I feel so lucky to know you." &lt;3
+        </div>
+        <div id="window-controls">
+            <button id="home-btn"><img src="assets/home.png"></button>
+            <button id="max-btn"><img src="assets/maximize.png"></button>
+            <button id="close-btn"><img src="assets/close.png"></button>
+        </div>
+    </div>
+
+    <div id="lyrics"><span id="text"></span><span class="cursor">|</span></div>
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const startBtn = document.getElementById('start-btn');
+        const audio = document.getElementById('laguku');
+
+        startBtn.addEventListener('click', () => {
+            // 1. Hilangkan layar pink pembuka
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+            }, 500);
+
+            // 2. Mainkan lagunya (INI YANG TADI HILANG)
+            audio.play();
+
+            // 3. Mulai animasi lirik ngetik
+            // Jika lagunya punya melodi awal yang panjang, ubah angka 500 ini menjadi lebih besar (misal: 2000 untuk 2 detik)
+            setTimeout(typeLine, 500);
+        });
+
+        // Kontrol Window
+        document.getElementById('home-btn').addEventListener('click', () => {
+            location.reload();
+        });
+        document.getElementById('max-btn').addEventListener('click', () => {
+            if(window.electronAPI) window.electronAPI.sendWindowControl('maximize');
+        });
+        document.getElementById('close-btn').addEventListener('click', () => {
+            if(window.electronAPI) window.electronAPI.sendWindowControl('close');
+        });
+
+        const lyrics = [
+            "Karena kamu cantik",
+            "Kan ku beri segalanya apa yang ku punya",
+            "Dan hatimu baik",
+            "Sempurnalah duniaku saat kau disisiku",
+            "Bukan karena make up di wajahmu",
+            "Atau lipstik merah itu",
+            "Lembut hati tutur kata",
+            "Terciptalah cinta yang ku puja"
+        ];
+
+        // Setting waktu yang sudah dipaskan dengan tempo lagunya
+        const settings = [
+            { speed: 80, delay: 1200 }, 
+            { speed: 55, delay: 1400 },  
+            { speed: 90, delay: 1200 },  
+            { speed: 60, delay: 1500 },  
+            { speed: 70, delay: 800 },   
+            { speed: 70, delay: 1000 },  
+            { speed: 80, delay: 900 },   
+            { speed: 75, delay: 3000 }   
+        ];
+
+        let index = 0;
+        let charIndex = 0;
+        const display = document.getElementById('text');
+
+        function typeLine() {
+            if (index >= lyrics.length) {
+                display.textContent = "<3";
+                return;
+            }
+
+            const line = lyrics[index];
+            const config = settings[index];
+
+            if (charIndex < line.length) {
+                display.textContent += line.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeLine, config.speed);
+            } else {
+                index++;
+                charIndex = 0;
+                setTimeout(() => {
+                    display.textContent = '';
+                    typeLine();
+                }, config.delay);
+            }
+        }
+    </script>
+</body>
+</html>
